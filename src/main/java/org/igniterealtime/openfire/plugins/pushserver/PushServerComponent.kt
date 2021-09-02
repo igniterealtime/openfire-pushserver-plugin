@@ -19,10 +19,11 @@ class PushServerComponent: Component {
     private var pushServerIQHandler: PushServerIQHandler = PushServerIQHandler(PushManager())
 
     companion object {
+        val NAME = PushServerProperty.serviceName
         private const val DESC = "Send push notifications to mobile devices through FCM or APNS"
     }
 
-    override fun getName(): String = PushServerProperty.serviceName
+    override fun getName(): String = NAME
 
     override fun getDescription() = DESC
 

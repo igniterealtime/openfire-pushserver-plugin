@@ -9,8 +9,18 @@
     <author>Busoft Teknoloji A.Ş.</author>
     <date>09/02/2021</date>
 
+    <minJavaVersion>1.8</minJavaVersion>
+
     <minServerVersion>4.3.0</minServerVersion>
 
     <databaseKey>pushserver</databaseKey>
     <databaseVersion>1</databaseVersion>
+
+    <adminconsole>
+        <tab id="tab-server">
+            <sidebar id="sidebar-server-settings">
+                <item id="pushserver-settings" name="${pushserver.settings.title}" url="pushserver-settings.jsp" description="${pushserver.settings.description}" />
+            </sidebar>
+        </tab>
+    </adminconsole>
 </plugin>
