@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <class>org.igniterealtime.openfire.plugins.pushserver.PushServerPlugin</class>
+
+    <name>${project.name}</name>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+
+    <author>Busoft Teknoloji A.Ş.</author>
+    <date>09/02/2021</date>
+
+    <minServerVersion>4.3.0</minServerVersion>
+
+    <databaseKey>pushserver</databaseKey>
+    <databaseVersion>1</databaseVersion>
+</plugin>
