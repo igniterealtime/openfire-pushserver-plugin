@@ -1,12 +1,9 @@
 package org.igniterealtime.openfire.plugins.pushserver
 
 import org.jivesoftware.database.DbConnectionManager
-import org.jivesoftware.util.JiveGlobals
 import org.slf4j.LoggerFactory
 import java.sql.Connection
-import java.sql.DriverManager
 import java.sql.PreparedStatement
-import java.sql.Statement
 
 object DbUtils {
 

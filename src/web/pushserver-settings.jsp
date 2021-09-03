@@ -15,7 +15,7 @@
     boolean androidCredentialUpdate = request.getParameter("androidCredentialUpdate") != null;
     boolean iosCredentialUpdate = request.getParameter("iosCredentialUpdate") != null;
 
-    String baseUrl = "pushserver-settings.jsp"
+    String baseUrl = "pushserver-settings.jsp";
 
     boolean csrfCheck = false;
     if (androidUpdate || iosUpdate || androidCredentialUpdate || iosCredentialUpdate) {
@@ -45,7 +45,7 @@
             String teamId = ParamUtils.getStringParameter(request, "teamId", null);
             String sandbox = ParamUtils.getStringParameter(request, "sandbox", null);
 
-            PushServerManager.setIosSettings(bundleId, key, teamId, sandbox);
+            PushServerManager.setIosSettings(bundleId, key, teamId);
             response.sendRedirect(newUrl);
         }
 
