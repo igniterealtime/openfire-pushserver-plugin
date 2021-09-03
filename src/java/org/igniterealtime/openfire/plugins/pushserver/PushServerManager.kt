@@ -12,19 +12,28 @@ object PushServerManager {
 
     private val logger = LoggerFactory.getLogger(PushServerManager::class.java)
 
-    fun getProperty(property: String) = JiveGlobals.getProperty(property, "")
+    @JvmStatic fun getProperty(property: String) = JiveGlobals.getProperty(property, "")
 
-    fun setAndroidSettings(projectId: String) {
+    @JvmStatic fun getFilePath(type: PushRecord.Type) =
+        when(type) {
+            PushRecord.Type.ios -> PushServerProperty.APNS_PKCS8_FILE_PATH
+            PushRecord.Type.android -> PushServerProperty.FCM_CREDENTIAL_FILE_PATH
+            PushRecord.Type.none -> null
+        }
+
+    @JvmStatic var FCM_CREDENTIAL_FILE_PATH = PushServerProperty.FCM_CREDENTIAL_FILE_PATH
+
+    @JvmStatic fun setAndroidSettings(projectId: String) {
         JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_FCM_PROJECT_ID.key, projectId)
     }
 
-    fun setIosSettings(bundleId: String, key: String, teamId: String) {
+    @JvmStatic fun setIosSettings(bundleId: String, key: String, teamId: String) {
         JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_APNS_BUNDLE_ID.key, bundleId)
         JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_APNS_KEY.key, key)
         JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_APNS_TEAM_ID.key, teamId)
     }
 
-    fun writeCredentialFileContent(content: String, type: PushRecord.Type) {
+    @JvmStatic fun writeCredentialFileContent(content: String, type: PushRecord.Type) {
         val file = when(type) {
             PushRecord.Type.ios -> File(PushServerProperty.APNS_PKCS8_FILE_PATH)
             PushRecord.Type.android -> File(PushServerProperty.FCM_CREDENTIAL_FILE_PATH)

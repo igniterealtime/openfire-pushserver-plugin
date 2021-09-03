@@ -34,8 +34,8 @@
     String csrfParam = StringUtils.randomString(15);
     CookieUtils.setCookie(request, response, "csrf", csrfParam, -1);
     pageContext.setAttribute("csrf", csrfParam);
-    pageContext.setAttribute("fcmcredentialpath", PushServerProperty.FCM_CREDENTIAL_FILE_PATH);
-    pageContext.setAttribute("apnscredentialpath", PushServerProperty.APNS_PKCS8_FILE_PATH);
+    pageContext.setAttribute("fcmcredentialpath", PushServerManager.getFilePath(PushRecord.Type.android));
+    pageContext.setAttribute("apnscredentialpath", PushServerManager.getFilePath(PushRecord.Type.ios));
 
     if (csrfCheck) {
         String newUrl = baseUrl + "?savesucceeded=true";
@@ -74,7 +74,7 @@
         <title>
             <fmt:message key="pushserver.settings.title"/>
         </title>
-        <meta name="pageID" content="settings"/>
+        <meta name="pageID" content="pushserver-settings"/>
     </head>
     <body>
         <c:choose>
@@ -140,14 +140,6 @@
                             </td>
                             <td>
                                 <input type="text" name="teamId" size="80" value='${pm:getProperty("pushserver.apple.apns.teamId")}' />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <fmt:message key="pushserver.settings.ios.sandbox" />
-                            </td>
-                            <td>
-                                <input type="text" name="sandbox" size="80" value='${pm:getProperty("pushserver.apple.apns.sandbox")}' />
                             </td>
                         </tr>
                     </tbody>
