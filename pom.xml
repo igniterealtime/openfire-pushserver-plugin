@@ -17,7 +17,7 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <kotlin.version>1.5.10</kotlin.version>
+        <kotlin.version>1.5.31</kotlin.version>
     </properties>
 
     <name>Push Server</name>
