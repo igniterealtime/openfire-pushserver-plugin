@@ -24,18 +24,24 @@ To upgrade to a new version, copy the new `pushserver.jar` file over the existin
 Configuration
 ------------
 
-Add those properties to the System Properties and change with your own values.
+After installing plugin, you should fill the fields under the page `Server -> Server Settings -> Push Server Properties.
+
+**Note:** After filling and saving values, you should restart the plugin.
 
 ### iOS
 
-* pushserver.apple.apns.bundleId (com.example.project)
-* pushserver.apple.apns.key (Signing Key from Apple Developer Key)
-* pushserver.apple.apns.teamId (Team Id from Apple Developer Center)
-* pushserver.apple.apns.path (/path/to/key.p8)
+* **Apns Bundle Id** (To learn more about App IDs, see [Register an App ID](https://help.apple.com/developer-account/#/dev1b35d6f83))
+* **Apns Key** (For more information, see [Get a key identifier](https://help.apple.com/developer-account/#/dev646934554))
+* **Apns Team Id** (For more information, see [Locate your Team ID](https://help.apple.com/developer-account/#/dev55c3c710c))
+* **APNS PKCS8 File Content** (The device token from your app, as a hexadecimal-encoded ASCII string. To learn more about device tokens, see [Registering Your App with APNs](https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns))
 
 ### Android
-* pusher.google.fcm.projectId (Project Id from Google Cloud Messaging)
-* pusher.google.fcm.path (/path/to/service_account.json)
+* **FCM Project Id**
+* **FCM Credential File Content** (Service Account Json File Content)
+
+Both of these can be found in your Firebase console, under Project Settings:
+* The ID is found in the "General" tab
+* The Service Account JSON file can be downloaded from the "Service Account" tab.
 
 Client Configuration
 ------------
@@ -75,6 +81,20 @@ Client Configuration
 ```
 
 * After registering with the push server, Client sends the node ID and the jid of the app server (push.example.com) to the user's server.
+```
+<iq type='set' id='x42'>
+  <enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE'><value>http://jabber.org/protocol/pubsub#publish-options</value></field>
+      <field var='secret'><value>Zt9z9wOtAUOSYCtYC7a5OORa</value></field>
+    </x>
+  </enable>
+</iq>
+```
+
+iOS Sandbox:
+
+You should send `<field var="sandbox"><value>true</value></field>` to support push on your sandbox devices.
 
 ```
 <iq type='set' id='x42'>
