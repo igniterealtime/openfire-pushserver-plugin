@@ -46,9 +46,11 @@ Both of these can be found in your Firebase console, under Project Settings:
 Client Configuration
 ------------
 
-### iOS
+### Registering Devices
 
-* Clients need to register with push server and get node information
+* Clients need to register with push server and get node and secret information
+
+### iOS
 
 ```
 <iq from="user@example.com/mobile" id="x20" to="push.example.com" type="set">
@@ -80,37 +82,7 @@ Client Configuration
 </iq>
 ```
 
-* After registering with the push server, Client sends the node ID and the jid of the app server (push.example.com) to the user's server.
-```
-<iq type='set' id='x42'>
-  <enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG'>
-    <x xmlns='jabber:x:data' type='submit'>
-      <field var='FORM_TYPE'><value>http://jabber.org/protocol/pubsub#publish-options</value></field>
-      <field var='secret'><value>Zt9z9wOtAUOSYCtYC7a5OORa</value></field>
-    </x>
-  </enable>
-</iq>
-```
-
-iOS Sandbox:
-
-You should send `<field var="sandbox"><value>true</value></field>` to support push on your sandbox devices.
-
-```
-<iq type='set' id='x42'>
-  <enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG'>
-    <x xmlns='jabber:x:data' type='submit'>
-      <field var='FORM_TYPE'><value>http://jabber.org/protocol/pubsub#publish-options</value></field>
-      <field var='secret'><value>Zt9z9wOtAUOSYCtYC7a5OORa</value></field>
-      <field var="sandbox"><value>true</value></field>
-    </x>
-  </enable>
-</iq>
-```
-
 ### Android
-
-* Clients need to register with push server and get node information
 
 ```
 <iq from="user@example.com/mobile" id="x20" to="push.example.com" type="set">
@@ -142,6 +114,8 @@ You should send `<field var="sandbox"><value>true</value></field>` to support pu
 </iq>
 ```
 
+### Enabling Notifications
+
 * After registering with the push server, Client sends the node ID and the jid of the app server (push.example.com) to the user's server.
 
 ```
@@ -154,3 +128,34 @@ You should send `<field var="sandbox"><value>true</value></field>` to support pu
   </enable>
 </iq>
 ```
+
+Note: To support sandbox devices in iOS, you should provide the `<field var="sandbox"><value>true</value></field>` in publish options.
+
+Example: 
+```
+<iq type='set' id='x42'>
+  <enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG'>
+    <x xmlns='jabber:x:data' type='submit'>
+      <field var='FORM_TYPE'><value>http://jabber.org/protocol/pubsub#publish-options</value></field>
+      <field var='secret'><value>Zt9z9wOtAUOSYCtYC7a5OORa</value></field>
+      <field var="sandbox"><value>true</value></field>
+    </x>
+  </enable>
+</iq>
+```
+
+More info can be found in [XEP-0357 Section 5](https://xmpp.org/extensions/xep-0357.html#enabling)
+
+### Disabling Notifications
+
+```
+<iq type='set' id='x97'>
+  <disable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG' />
+</iq>
+```
+
+More info can be found in [XEP-0357 Section 6](https://xmpp.org/extensions/xep-0357.html#disabling)
+
+### Publishing Notifications
+
+It can be found in [XEP-0357 Section 7](https://xmpp.org/extensions/xep-0357.html#publishing).
