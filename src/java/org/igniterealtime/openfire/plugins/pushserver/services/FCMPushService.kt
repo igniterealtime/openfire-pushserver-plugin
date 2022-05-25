@@ -32,21 +32,21 @@ class FCMPushService private constructor(): PushService {
         }
     }
 
-    override fun push(messageId: String?, token: String, isSandbox: Boolean): Boolean {
+    override fun push(notificationData: Map<String, String>?, additionalData: Map<String, String>?, token: String, isSandbox: Boolean): Boolean {
         return Pushraven.push(
             Message()
-                .data(mapOf("messageId" to messageId))
+                .data(additionalData)
                 .token(token)
                 .android(AndroidConfig().priority(AndroidConfig.Priority.HIGH))
         )?.let { fcmResponse ->
             if (fcmResponse.responseCode == 200) {
                 true
             } else {
-                logger.error("FCM response is not successful for messageId: $messageId, (${fcmResponse.responseCode}) ${fcmResponse.message}")
+                logger.error("FCM response is not successful: $notificationData, $additionalData, (${fcmResponse.responseCode}) ${fcmResponse.message}")
                 false
             }
         } ?: kotlin.run {
-            logger.error("FCM response is null for messageId: $messageId")
+            logger.error("FCM response is null: $notificationData, $additionalData,")
             false
         }
     }

@@ -53,14 +53,16 @@ class APNSPushService private constructor(
         }
     }
 
-    override fun push(messageId: String?, token: String, isSandbox: Boolean): Boolean {
+    override fun push(notificationData: Map<String, String>?, additionalData: Map<String, String>?, token: String, isSandbox: Boolean): Boolean {
         val payloadBuilder = SimpleApnsPayloadBuilder()
             .setAlertTitle("message")
             .setCategoryName("message")
             .setSound("default")
             .setMutableContent(true)
 
-        messageId?.let { payloadBuilder.addCustomProperty("messageId", messageId) }
+        additionalData?.forEach { (key, value) ->
+            payloadBuilder.addCustomProperty(key, value)
+        }
 
         val payload = payloadBuilder.build()
 

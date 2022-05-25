@@ -111,14 +111,15 @@ class PushServerIQHandler(private val pushManager: PushManager) {
             return iq.createError(PacketError.Condition.bad_request)
         }
 
-        val messageId = publishElement
+        val notificationElement = publishElement
             .element("item")
             ?.element(QName.get("notification", "urn:xmpp:push:0"))
-            ?.element(QName.get("messageId", "siper:push:0"))
-            ?.stringValue ?: kotlin.run {
-                logger.error("'messageId' element should be set.")
-                return iq.createError(PacketError.Condition.bad_request)
-            }
+
+        val notificationData = notificationElement?.dataMap()
+
+        val additionalData = notificationElement?.elements()
+            ?.filter { it.namespace != QName.get("x", "jabber:x:data") }
+            ?.associateBy({it.name}) { it.stringValue }
 
         val publishOptionsElement = pubsubElement.element("publish-options") ?: kotlin.run {
             logger.error("'publish-options' element should be set.")
@@ -133,7 +134,8 @@ class PushServerIQHandler(private val pushManager: PushManager) {
             if (pushRecord.secret == secret) {
                 val isSuccessful = pushManager.sendPush(
                     PushManager.Service.of(pushRecord.type)
-                    , messageId
+                    , notificationData
+                    , additionalData
                     , pushRecord.token
                     , isSandbox
                 )

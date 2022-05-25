@@ -34,10 +34,10 @@ class PushManager {
     private val fcmPushService: FCMPushService? = FCMPushService.invoke()
     private val apnsPushService: APNSPushService? = APNSPushService.invoke()
 
-    fun sendPush(service: Service?, messageId: String, token: String, isSandbox: Boolean): Boolean? {
+    fun sendPush(service: Service?, notificationData: Map<String, String>?, additionalData: Map<String, String>?, token: String, isSandbox: Boolean): Boolean? {
         return when(service) {
-            Service.FCM     -> fcmPushService?.push(messageId, token, isSandbox)
-            Service.APNS    -> apnsPushService?.push(messageId, token, isSandbox)
+            Service.FCM     -> fcmPushService?.push(notificationData, additionalData, token, isSandbox)
+            Service.APNS    -> apnsPushService?.push(notificationData, additionalData, token, isSandbox)
             else -> null
         }
     }
