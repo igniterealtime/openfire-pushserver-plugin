@@ -117,8 +117,9 @@ class PushServerIQHandler(private val pushManager: PushManager) {
 
         val notificationData = notificationElement?.dataMap()
 
-        val additionalData = notificationElement?.elements()
-            ?.filter { it.namespace != QName.get("x", "jabber:x:data") }
+        val additionalData = notificationElement
+            ?.elements()
+            ?.filter { it.namespace != QName.get("x", "jabber:x:data").namespace }
             ?.associateBy({it.name}) { it.stringValue }
 
         val publishOptionsElement = pubsubElement.element("publish-options") ?: kotlin.run {
