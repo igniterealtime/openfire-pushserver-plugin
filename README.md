@@ -1,3 +1,5 @@
+![Build Status](https://github.com/igniterealtime/openfire-pushserver-plugin/workflows/Java%20CI/badge.svg)](https://github.com/igniterealtime/openfire-pushserver-plugin/actions)
+
 # Openfire Push Server Plugin
 An [XEP-0357: Push Notifications](https://xmpp.org/extensions/xep-0357.html) app server that relays push messages between the user’s server and FCM (Firebase Cloud Messaging) or APNS (Apple Push Notification Service).
 
