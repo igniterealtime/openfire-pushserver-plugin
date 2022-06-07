@@ -3,13 +3,17 @@
 <%@ page import="org.jivesoftware.util.*" %>
 <%@ page import="org.igniterealtime.openfire.plugins.pushserver.PushServerManager" %>
 <%@ page import="org.igniterealtime.openfire.plugins.pushserver.models.PushRecord" %>
-<%@ page import="org.igniterealtime.openfire.plugins.pushserver.PushServerProperty" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
 
+<%@ taglib uri="admin" prefix="admin" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="/WEB-INF/pushservermanager.tld" prefix="pm"%>
 
 <%
+    final ArrayList<PushServerManager.Message> messageList = new ArrayList<>();
+
     boolean androidUpdate = request.getParameter("androidUpdate") != null;
     boolean iosUpdate = request.getParameter("iosUpdate") != null;
     boolean androidCredentialUpdate = request.getParameter("androidCredentialUpdate") != null;
@@ -36,35 +40,43 @@
     pageContext.setAttribute("csrf", csrfParam);
     pageContext.setAttribute("fcmcredentialpath", PushServerManager.getFilePath(PushRecord.Type.android));
     pageContext.setAttribute("apnscredentialpath", PushServerManager.getFilePath(PushRecord.Type.ios));
+    pageContext.setAttribute( "messageList", messageList );
 
     if (csrfCheck) {
-        String newUrl = baseUrl + "?savesucceeded=true";
         if (iosUpdate) {
             String bundleId = ParamUtils.getStringParameter(request, "bundleId", null);
             String key = ParamUtils.getStringParameter(request, "key", null);
             String teamId = ParamUtils.getStringParameter(request, "teamId", null);
-            String sandbox = ParamUtils.getStringParameter(request, "sandbox", null);
 
-            PushServerManager.setIosSettings(bundleId, key, teamId);
-            response.sendRedirect(newUrl);
+            List<PushServerManager.Message> iosUpdateMessageList = PushServerManager.setIosSettings(bundleId, key, teamId);
+            messageList.addAll(iosUpdateMessageList);
         }
 
         if (androidUpdate) {
             String projectId = ParamUtils.getStringParameter(request, "projectId", null);
-            PushServerManager.setAndroidSettings(projectId);
-            response.sendRedirect(newUrl);
+
+            PushServerManager.Message androidUpdateMessage = PushServerManager.setAndroidSettings(projectId);
+            messageList.add(androidUpdateMessage);
         }
 
         if (iosCredentialUpdate) {
             String apns = ParamUtils.getStringParameter(request, "apns", null);
-            PushServerManager.writeCredentialFileContent(apns, PushRecord.Type.ios);
-            response.sendRedirect(newUrl);
+            if (apns == null) {
+                messageList.add(PushServerManager.Message.IosCredentialMissing);
+            } else {
+                messageList.add(PushServerManager.Message.IosCredentialSaved);
+                PushServerManager.writeCredentialFileContent(apns, PushRecord.Type.ios);
+            }
         }
 
         if (androidCredentialUpdate) {
             String fcm = ParamUtils.getStringParameter(request, "fcm", null);
-            PushServerManager.writeCredentialFileContent(fcm, PushRecord.Type.android);
-            response.sendRedirect(newUrl);
+            if (fcm == null) {
+                messageList.add(PushServerManager.Message.AndroidCredentialMissing);
+            } else {
+                messageList.add(PushServerManager.Message.AndroidCredentialSaved);
+                PushServerManager.writeCredentialFileContent(fcm, PushRecord.Type.android);
+            }
         }
     }
 %>
@@ -77,38 +89,13 @@
         <meta name="pageID" content="pushserver-settings"/>
     </head>
     <body>
-        <c:choose>
-            <c:when test="${param.savesucceeded eq 'true'}">
-                <div class="jive-success">
-                    <table cellpadding="0" cellspacing="0" border="0">
-                        <tbody>
-                            <tr>
-                                <td class="jive-icon"><img src="images/success-16x16.gif" width="16" height="16" border="0" alt="<fmt:message key='pushserver.settings.savesuccess' />"/></td>
-                                <td class="jive-icon-label">
-                                    <fmt:message key='pushserver.settings.savesuccess' />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <br />
-            </c:when>
-            <c:when test="${param.savesucceeded eq 'false'}">
-                <div class="jive-error">
-                    <table cellpadding="0" cellspacing="0" border="0">
-                        <tbody>
-                            <tr>
-                                <td class="jive-icon"><img src="images/error-16x16.gif" width="16" height="16" border="0" alt="<fmt:message key='pushserver.settings.savefail' />"/></td>
-                                <td class="jive-icon-label">
-                                    <fmt:message key='pushserver.settings.savefail' />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <br />
-            </c:when>
-        </c:choose>
+
+        <!-- Display all error and success messages -->
+        <c:forEach var="message" items="${messageList}">
+            <admin:infobox type="${message.success ? 'success' : 'error'}">
+                <fmt:message key="${message.value}"/>
+            </admin:infobox>
+        </c:forEach>
 
         <form action="pushserver-settings.jsp" method="post">
             <input type="hidden" name="csrf" value="${csrf}" />
