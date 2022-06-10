@@ -11,8 +11,16 @@
             font-family : tahoma, verdana, arial, helvetica, sans-serif;
             font-size : 0.8em;
         }
+        H4 {
+            font-size : 10pt;
+            font-style: italic;
+        }
+        H3 {
+            font-size : 10pt;
+            font-weight: bold;
+        }
         H2 {
-             font-size : 10pt;
+             font-size : 12pt;
              font-weight : bold;
         }
         A:hover {
@@ -25,29 +33,192 @@
             border-bottom : 1px #ccc solid;
             padding-bottom : 2px;
         }
-
-        TT {
-            font-family : courier new;
-            font-weight : bold;
-            color : #060;
-        }
-        PRE {
-            font-family : courier new;
-            font-size : 100%;
+        CODE {
+            font-family:"Courier New",serif;
+            font-size:100%;
+            padding:2px 4px;
+            color:#111;
         }
     </style>
 </head>
 <body>
 
-<h1>
-    Push Server Plugin Readme
-</h1>
+<h1>Openfire Push Server Plugin</h1>
 
 <h2>Overview</h2>
 
+<p>An <a href="https://xmpp.org/extensions/xep-0357.html"> XEP-0357: Push Notifications</a> app server that relays push messages between the user's server and FCM (Firebase Cloud Messaging) or APNS (Apple Push Notification Service).</p>
+
+<h2>Building</h2>
+
+<p>This project is using the Maven-based Openfire build process, as introduced in Openfire 4.2.0. To build this plugin locally, ensure that the following are available on your local host:</p>
+
+<ul>
+    <li>A Java Development Kit, version 7 or (preferably) 8</li>
+    <li>Apache Maven 3</li>
+</ul>
+
+<p>To build this project, invoke on a command shell:</p>
+
+<code>$ mvn clean package</code>
+
+<p>Upon completion, the openfire plugin will be available in <code>target/pushserver-openfire-plugin-assembly.jar</code>. This file should be renamed to <code>pushserver.jar</code></p>
+
+<h2>Installation</h2>
+
 <p>
-    Send push notifications to mobile devices through FCM or APNS
+    Copy <code>pushserver.jar</code> into the plugins directory of your Openfire server, or use the Openfire Admin Console to upload the plugin. The plugin will then be automatically deployed.
+    <br>
+    <br>
+    To upgrade to a new version, copy the new <code>pushserver.jar</code> file over the existing file.
 </p>
+
+<h2>Configuration</h2>
+
+<p>
+    After installing plugin, you should fill the fields under the page <code>Server -> Server Settings -> Push Server Properties</code>.
+    <br>
+    <br>
+    <b>Note:</b> After filling and saving values, you should restart the plugin.
+</p>
+
+<dl>
+    <dt><b>iOS</b></dt>
+    <dd><b>* Apns Bundle Id</b> (To learn more about App IDs, see <a href="https://help.apple.com/developer-account/#/dev1b35d6f83">Register an App ID</a>)</dd>
+    <dd><b>* Apns Key</b> (For more information, see <a href="https://help.apple.com/developer-account/#/dev646934554">Get a key identifier</a>)</dd>
+    <dd><b>* Apns Team Id</b> (For more information, see <a href="https://help.apple.com/developer-account/#/dev55c3c710c">Locate your Team ID</a>)</dd>
+    <dd><b>* APNS PKCS8 File Content</b> (The device token from your app, as a hexadecimal-encoded ASCII string. To learn more about device tokens, see <a href="https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns">Registering Your App with APNs</a>)</dd>
+    <dt><b>Android</b></dt>
+    <dd><b>* FCM Project Id</b></dd>
+    <dd><b>* FCM Credential File Content</b> (Service Account Json File Content)</dd>
+</dl>
+
+<dl>
+    <dt>Both of these can be found in your Firebase console, under Project Settings:</dt>
+    <dd>* The ID is found in the "General" tab</dd>
+    <dd>* The Service Account JSON file can be downloaded from the <i>Service Account</i> tab.</dd>
+</dl>
+
+<h2>Client Configuration</h2>
+
+<h3>Registering Devices</h3>
+
+<p>Clients need to register with push server and get node and secret information</p>
+
+<h4>iOS</h4>
+<pre>
+    <code>
+        &lt;iq from="user@example.com/mobile" id="x20" to="push.example.com" type="set"
+            &lt;command xmlns="http://jabber.org/protocol/commands" action="execute" node="register-push-apns">
+                &lt;x xmlns="jabber:x:data" type="submit">
+                    &lt;field var="token">
+                        &lt;value>243CA5F2A4EE00B66E3208CD05C962A30EFA80B2D9F8DD508CE8182E04EAB695&lt;/value>
+                    &lt;/field>
+                    &lt;field var="device-id">
+                        &lt;value>0523AD60-ADD0-45A4-8D05-DC1AC59BB1CA&lt;/value>
+                    &lt;/field>
+                &lt;/x>
+            &lt;/command>
+        &lt;/iq>
+
+        &lt;iq from="push.example.com" id="x20" to="user@example.com/mobile" type="result">
+            &lt;command xmlns="http://jabber.org/protocol/commands" action="complete" node="register-push-apns">
+                &lt;x xmlns="jabber:x:data" type="form">
+                    &lt;field type="text-single" var="node">
+                        &lt;value>37Ni514izxHG&lt;/value>
+                    &lt;/field>
+                    &lt;field type="text-single" var="secret">
+                        &lt;value>Zt9z9wOtAUOSYCtYC7a5OORa&lt;/value>
+                    &lt;/field>
+                &lt;/x>
+            &lt;/command>
+        &lt;/iq>
+    </code>
+</pre>
+
+<h4>Android</h4>
+<pre>
+    <code>
+        &lt;iq from="user@example.com/mobile" id="x20" to="push.example.com" type="set">
+            &lt;command xmlns="http://jabber.org/protocol/commands" action="execute" node="register-push-fcm">
+                &lt;x xmlns="jabber:x:data" type="submit">
+                    &lt;field var="token">
+                        &lt;value>dPrh685pTdGns_MHsu1I-b:APA91bGwfwGthGPxE2aUJ5o-pyn1eMzV0WPqFulpyYo20xOEy7efh8soyJpcCuibleBGjCaRDRgjl6vSYNwDDE7pq0lfKOzubfUvCrvKvLMN4uRLEY373L11sCKqHeOf-_Qn3eooeOge&lt;/value>
+                    &lt;/field>
+                    &lt;field var="device-id">
+                        &lt;value>0ab43fb78f92ba10&lt;/value>
+                    &lt;/field>
+                &lt;/x>
+            &lt;/command>
+        &lt;/iq>
+
+        &lt;iq from="push.example.com" id="x20" to="user@example.com/mobile" type="result">
+            &lt;command xmlns="http://jabber.org/protocol/commands" action="complete" node="register-push-fcm">
+                &lt;x xmlns="jabber:x:data" type="form">
+                    &lt;field type="text-single" var="node">
+                        &lt;value>KmDtdKoUTiGr&lt;/value>
+                    &lt;/field>
+                    &lt;field type="text-single" var="secret">
+                        &lt;value>FBfIl4qflMTDKn6CYPxXJHyH&lt;/value>
+                    &lt;/field>
+                &lt;/x>
+            &lt;/command>
+        &lt;/iq>
+    </code>
+</pre>
+
+<h3>Enabling Notifications</h3>
+
+<p>After registering with the push server, Client sends the node ID and the jid of the app server (<i>push.example.com</i>) to the user's server.</p>
+
+<pre>
+    <code>
+        &lt;iq type='set' id='x42'>
+            &lt;enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='KmDtdKoUTiGr'>
+                &lt;x xmlns='jabber:x:data' type='submit'>
+                    &lt;field var='FORM_TYPE'>&lt;value>http://jabber.org/protocol/pubsub#publish-options&lt;/value>&lt;/field>
+                    &lt;field var='secret'>&lt;value>FBfIl4qflMTDKn6CYPxXJHyH&lt;/value>&lt;/field>
+                &lt;/x>
+            &lt;/enable>
+        &lt;/iq>
+    </code>
+</pre>
+
+<p><b>Note:</b> To support sandbox devices in iOS, you should provide the <code>&lt;field var="sandbox">&lt;value>true&lt;/value>&lt;/field></code> in publish options.</p>
+
+<h4>Example:</h4>
+
+<pre>
+    <code>
+        &lt;iq type='set' id='x42'>
+            &lt;enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG'>
+                &lt;x xmlns='jabber:x:data' type='submit'>
+                    &lt;field var='FORM_TYPE'>&lt;value>http://jabber.org/protocol/pubsub#publish-options&lt;/value>&lt;/field>
+                    &lt;field var='secret'>&lt;value>Zt9z9wOtAUOSYCtYC7a5OORa&lt;/value>&lt;/field>
+                    &lt;field var="sandbox">&lt;value>true&lt;/value>&lt;/field>
+                &lt;/x>
+            &lt;/enable>
+        &lt;/iq>
+    </code>
+</pre>
+
+<p>More info can be found in <a href="https://xmpp.org/extensions/xep-0357.html#enabling">XEP-0357 Section 5</a></p>
+
+<h3>Disabling Notifications</h3>
+
+<pre>
+    <code>
+        &lt;iq type='set' id='x97'>
+            &lt;disable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG' />
+        &lt;/iq>
+    </code>
+</pre>
+
+<p>More info can be found in <a href="https://xmpp.org/extensions/xep-0357.html#disabling">XEP-0357 Section 6</a></p>
+
+<h3>Publishing Notifications</h3>
+
+<p>It can be found in <a href="https://xmpp.org/extensions/xep-0357.html#publishing">XEP-0357 Section 7</a></p>
 
 </body>
 </html>
