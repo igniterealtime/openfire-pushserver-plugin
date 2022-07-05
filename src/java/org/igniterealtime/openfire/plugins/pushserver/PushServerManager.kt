@@ -31,8 +31,6 @@ object PushServerManager {
         , AndroidCredentialSaved( true, "credential.android.saved", "pushserver.settings.fcm.credential.saved_successfully")
     }
 
-    @JvmStatic fun getProperty(property: String) = JiveGlobals.getProperty(property, "")
-
     @JvmStatic fun getFilePath(type: PushRecord.Type) =
         when(type) {
             PushRecord.Type.ios -> PushServerProperty.APNS_PKCS8_FILE_PATH

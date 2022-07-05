@@ -9,7 +9,6 @@
 <%@ taglib uri="admin" prefix="admin" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/pushservermanager.tld" prefix="pm"%>
 
 <%
     final ArrayList<PushServerManager.Message> messageList = new ArrayList<>();
@@ -110,7 +109,7 @@
                                 <fmt:message key="pushserver.settings.ios.bundleid" />
                             </td>
                             <td>
-                                <input type="text" name="bundleId" size="80" value='${pm:getProperty("pushserver.apple.apns.bundleId")}' />
+                                <input type="text" name="bundleId" size="80" value='${admin:getProperty("pushserver.apple.apns.bundleId", "")}' />
                             </td>
                         </tr>
                         <tr>
@@ -118,7 +117,7 @@
                                 <fmt:message key="pushserver.settings.ios.key" />
                             </td>
                             <td>
-                                <input type="text" name="key" size="80" value='${pm:getProperty("pushserver.apple.apns.key")}' />
+                                <input type="text" name="key" size="80" value='${admin:getProperty("pushserver.apple.apns.key", "")}' />
                             </td>
                         </tr>
                         <tr>
@@ -126,7 +125,7 @@
                                 <fmt:message key="pushserver.settings.ios.teamid" />
                             </td>
                             <td>
-                                <input type="text" name="teamId" size="80" value='${pm:getProperty("pushserver.apple.apns.teamId")}' />
+                                <input type="text" name="teamId" size="80" value='${admin:getProperty("pushserver.apple.apns.teamId", "")}' />
                             </td>
                         </tr>
                     </tbody>
@@ -152,7 +151,7 @@
                                 <fmt:message key="pushserver.settings.android.projectid" />
                             </td>
                             <td>
-                                <input type="text" name="projectId" size="80" value='${pm:getProperty("pushserver.google.fcm.projectId")}' />
+                                <input type="text" name="projectId" size="80" value='${admin:getProperty("pushserver.google.fcm.projectId", "")}' />
                             </td>
                         </tr>
                     </tbody>
