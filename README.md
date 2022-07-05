@@ -54,7 +54,7 @@ Client Configuration
 
 ### iOS
 
-```
+```xml
 <iq from="user@example.com/mobile" id="x20" to="push.example.com" type="set">
     <command xmlns="http://jabber.org/protocol/commands" action="execute" node="register-push-apns">
         <x xmlns="jabber:x:data" type="submit">
@@ -69,7 +69,7 @@ Client Configuration
 </iq>
 ```
 
-```
+```xml
 <iq from="push.example.com" id="x20" to="user@example.com/mobile" type="result">
     <command xmlns="http://jabber.org/protocol/commands" action="complete" node="register-push-apns">
         <x xmlns="jabber:x:data" type="form">
@@ -86,7 +86,7 @@ Client Configuration
 
 ### Android
 
-```
+```xml
 <iq from="user@example.com/mobile" id="x20" to="push.example.com" type="set">
     <command xmlns="http://jabber.org/protocol/commands" action="execute" node="register-push-fcm">
         <x xmlns="jabber:x:data" type="submit">
@@ -101,7 +101,7 @@ Client Configuration
 </iq>
 ```
 
-```
+```xml
 <iq from="push.example.com" id="x20" to="user@example.com/mobile" type="result">
     <command xmlns="http://jabber.org/protocol/commands" action="complete" node="register-push-fcm">
         <x xmlns="jabber:x:data" type="form">
@@ -120,7 +120,7 @@ Client Configuration
 
 * After registering with the push server, Client sends the node ID and the jid of the app server (push.example.com) to the user's server.
 
-```
+```xml
 <iq type='set' id='x42'>
   <enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='KmDtdKoUTiGr'>
     <x xmlns='jabber:x:data' type='submit'>
@@ -134,7 +134,7 @@ Client Configuration
 Note: To support sandbox devices in iOS, you should provide the `<field var="sandbox"><value>true</value></field>` in publish options.
 
 Example: 
-```
+```xml
 <iq type='set' id='x42'>
   <enable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG'>
     <x xmlns='jabber:x:data' type='submit'>
@@ -150,7 +150,7 @@ More info can be found in [XEP-0357 Section 5](https://xmpp.org/extensions/xep-0
 
 ### Disabling Notifications
 
-```
+```xml
 <iq type='set' id='x97'>
   <disable xmlns='urn:xmpp:push:0' jid='push.example.com' node='37Ni514izxHG' />
 </iq>
