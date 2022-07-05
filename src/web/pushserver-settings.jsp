@@ -106,26 +106,26 @@
                     <tbody>
                         <tr>
                             <td>
-                                <fmt:message key="pushserver.settings.ios.bundleid" />
+                                <label for="bundleId"><fmt:message key="pushserver.settings.ios.bundleid" /></label>
                             </td>
                             <td>
-                                <input type="text" name="bundleId" size="80" value='${admin:getProperty("pushserver.apple.apns.bundleId", "")}' />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <fmt:message key="pushserver.settings.ios.key" />
-                            </td>
-                            <td>
-                                <input type="text" name="key" size="80" value='${admin:getProperty("pushserver.apple.apns.key", "")}' />
+                                <input type="text" name="bundleId" id="bundleId" size="80" value='${admin:getProperty("pushserver.apple.apns.bundleId", "")}' />
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <fmt:message key="pushserver.settings.ios.teamid" />
+                                <label for="key"><fmt:message key="pushserver.settings.ios.key" /></label>
                             </td>
                             <td>
-                                <input type="text" name="teamId" size="80" value='${admin:getProperty("pushserver.apple.apns.teamId", "")}' />
+                                <input type="text" name="key" id="key" size="80" value='${admin:getProperty("pushserver.apple.apns.key", "")}' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="teamId"><fmt:message key="pushserver.settings.ios.teamid" /></label>
+                            </td>
+                            <td>
+                                <input type="text" name="teamId" id="teamId" size="80" value='${admin:getProperty("pushserver.apple.apns.teamId", "")}' />
                             </td>
                         </tr>
                     </tbody>
@@ -148,10 +148,10 @@
                     <tbody>
                         <tr>
                             <td>
-                                <fmt:message key="pushserver.settings.android.projectid" />
+                                <label for="projectId"><fmt:message key="pushserver.settings.android.projectid" /></label>
                             </td>
                             <td>
-                                <input type="text" name="projectId" size="80" value='${admin:getProperty("pushserver.google.fcm.projectId", "")}' />
+                                <input type="text" name="projectId" id="projectId" size="80" value='${admin:getProperty("pushserver.google.fcm.projectId", "")}' />
                             </td>
                         </tr>
                     </tbody>
@@ -174,12 +174,12 @@
                     <tbody>
                         <tr>
                             <td>
-                                <fmt:message key="pushserver.settings.path"/>: <text readonly size="80">${apnscredentialpath}</text>
+                                <label for="apns"><fmt:message key="pushserver.settings.path"/>: <text readonly size="80">${apnscredentialpath}</text></label>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <textarea name="apns" cols="70" rows="10"></textarea>
+                                <textarea name="apns" id="apns" cols="70" rows="10"></textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -202,12 +202,12 @@
                     <tbody>
                         <tr>
                             <td>
-                                <fmt:message key="pushserver.settings.path" />: <text readonly size="80">${fcmcredentialpath}</text>
+                                <label for="fcm"><fmt:message key="pushserver.settings.path" />: <text readonly size="80">${fcmcredentialpath}</text></label>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <textarea name="fcm" cols="70" rows="10"></textarea>
+                                <textarea name="fcm" id="fcm" cols="70" rows="10"></textarea>
                             </td>
                         </tr>
                     </tbody>
