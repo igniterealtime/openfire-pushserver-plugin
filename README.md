@@ -32,18 +32,23 @@ After installing plugin, you should fill the fields under the page `Server -> Se
 
 ### iOS
 
-* **Apns Bundle Id** (To learn more about App IDs, see [Register an App ID](https://help.apple.com/developer-account/#/dev1b35d6f83))
-* **Apns Key** (For more information, see [Get a key identifier](https://help.apple.com/developer-account/#/dev646934554))
-* **Apns Team Id** (For more information, see [Locate your Team ID](https://help.apple.com/developer-account/#/dev55c3c710c))
-* **APNS PKCS8 File Content** (The device token from your app, as a hexadecimal-encoded ASCII string. To learn more about device tokens, see [Registering Your App with APNs](https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns))
+Push Server Plugin uses token-based authentication to communicate with Apple Push Notification service. (For more information, see [Establishing a Token-Based Connection to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_token-based_connection_to_apns))
+
+* **Bundle Id** ([Bundle IDs](https://developer.apple.com/documentation/appstoreconnectapi/bundle_ids))
+* **Team Id** ([Locate your Team ID](https://help.apple.com/developer-account/#/dev55c3c710c))
+* **Key Id**
+* **Encryption Key**
 
 ### Android
+
+Push Server Plugin uses Firebase Cloud Messaging to send push notifications to Android clients. In order to activate sending push notifications to Android clients, you should create a Firebase project and add Firebase to your Android application. (For more information, see [Add Firebase to your Android project](https://firebase.google.com/docs/android/setup?authuser=0&hl=en))
+
 * **FCM Project Id**
-* **FCM Credential File Content** (Service Account Json File Content)
+* **Google Cloud Service Account Key** (Service Account Key Json File)
 
 Both of these can be found in your Firebase console, under Project Settings:
-* The ID is found in the "General" tab
-* The Service Account JSON file can be downloaded from the "Service Account" tab.
+* The ID is in the "General" tab
+* The Service Account JSON file can be created and downloaded from the "Service Account" tab. (or [ Create service account key using Google Console ](https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=en#creating))
 
 Client Configuration
 ------------

@@ -2,7 +2,6 @@
 
 <%@ page import="org.jivesoftware.util.*" %>
 <%@ page import="org.igniterealtime.openfire.plugins.pushserver.PushServerManager" %>
-<%@ page import="org.igniterealtime.openfire.plugins.pushserver.models.PushRecord" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 
@@ -13,77 +12,49 @@
 <%
     final ArrayList<PushServerManager.Message> messageList = new ArrayList<>();
 
-    boolean androidUpdate = request.getParameter("androidUpdate") != null;
     boolean iosUpdate = request.getParameter("iosUpdate") != null;
-    boolean androidCredentialUpdate = request.getParameter("androidCredentialUpdate") != null;
-    boolean iosCredentialUpdate = request.getParameter("iosCredentialUpdate") != null;
+    boolean androidUpdate = request.getParameter("androidUpdate") != null;
 
-    String baseUrl = "pushserver-settings.jsp";
-
-    boolean csrfCheck = false;
-    if (androidUpdate || iosUpdate || androidCredentialUpdate || iosCredentialUpdate) {
+    // If 'save operation' has been done, adds its result(s) to `messageList`.
+    if (androidUpdate || iosUpdate) {
         Cookie csrfCookie = CookieUtils.getCookie(request, "csrf");
         String csrfParam = ParamUtils.getParameter(request, "csrf");
+
         if (csrfCookie == null || csrfParam == null || !csrfCookie.getValue().equals(csrfParam)) {
-            String newUrl = baseUrl + "?savesucceeded=false";
-            response.sendRedirect(newUrl);
-        }
-        else
-        {
-            csrfCheck = true;
+            messageList.add(PushServerManager.Message.CSRFError);
+        } else {
+            if (iosUpdate) {
+                String bundleId = ParamUtils.getStringParameter(request, "bundleId", null);
+                String teamId = ParamUtils.getStringParameter(request, "teamId", null);
+                String keyId = ParamUtils.getStringParameter(request, "keyId", null);
+                String encryptionKeyContent = ParamUtils.getStringParameter(request, "encryptionKeyContent", null);
+
+                List<PushServerManager.Message> iosUpdateMessageList =
+                        PushServerManager.setIosSettings(bundleId, teamId, keyId, encryptionKeyContent);
+                messageList.addAll(iosUpdateMessageList);
+            }
+
+            if (androidUpdate) {
+                String projectId = ParamUtils.getStringParameter(request, "projectId", null);
+                String serviceAccountKeyContent = ParamUtils.getStringParameter(request, "serviceAccountKeyContent", null);
+
+                List<PushServerManager.Message> androidUpdateMessageList =
+                        PushServerManager.setAndroidSettings(projectId, serviceAccountKeyContent);
+                messageList.addAll(androidUpdateMessageList);
+            }
         }
     }
 
     String csrfParam = StringUtils.randomString(15);
     CookieUtils.setCookie(request, response, "csrf", csrfParam, -1);
     pageContext.setAttribute("csrf", csrfParam);
-    pageContext.setAttribute("fcmcredentialpath", PushServerManager.getFilePath(PushRecord.Type.android));
-    pageContext.setAttribute("apnscredentialpath", PushServerManager.getFilePath(PushRecord.Type.ios));
     pageContext.setAttribute( "messageList", messageList );
-
-    if (csrfCheck) {
-        if (iosUpdate) {
-            String bundleId = ParamUtils.getStringParameter(request, "bundleId", null);
-            String key = ParamUtils.getStringParameter(request, "key", null);
-            String teamId = ParamUtils.getStringParameter(request, "teamId", null);
-
-            List<PushServerManager.Message> iosUpdateMessageList = PushServerManager.setIosSettings(bundleId, key, teamId);
-            messageList.addAll(iosUpdateMessageList);
-        }
-
-        if (androidUpdate) {
-            String projectId = ParamUtils.getStringParameter(request, "projectId", null);
-
-            PushServerManager.Message androidUpdateMessage = PushServerManager.setAndroidSettings(projectId);
-            messageList.add(androidUpdateMessage);
-        }
-
-        if (iosCredentialUpdate) {
-            String apns = ParamUtils.getStringParameter(request, "apns", null);
-            if (apns == null) {
-                messageList.add(PushServerManager.Message.IosCredentialMissing);
-            } else {
-                messageList.add(PushServerManager.Message.IosCredentialSaved);
-                PushServerManager.writeCredentialFileContent(apns, PushRecord.Type.ios);
-            }
-        }
-
-        if (androidCredentialUpdate) {
-            String fcm = ParamUtils.getStringParameter(request, "fcm", null);
-            if (fcm == null) {
-                messageList.add(PushServerManager.Message.AndroidCredentialMissing);
-            } else {
-                messageList.add(PushServerManager.Message.AndroidCredentialSaved);
-                PushServerManager.writeCredentialFileContent(fcm, PushRecord.Type.android);
-            }
-        }
-    }
 %>
 
 <html>
     <head>
         <title>
-            <fmt:message key="pushserver.settings.title"/>
+            <fmt:message key="push.server.settings.title"/>
         </title>
         <meta name="pageID" content="pushserver-settings"/>
     </head>
@@ -96,43 +67,56 @@
             </admin:infobox>
         </c:forEach>
 
+        <p><fmt:message key="push.server.settings.description.detail" /></p>
+        <br />
+
         <form action="pushserver-settings.jsp" method="post">
             <input type="hidden" name="csrf" value="${csrf}" />
             <div class="jive-contentBoxHeader">
-                <fmt:message key="pushserver.settings.ios" />
+                <fmt:message key="push.server.settings.ios.title" />
             </div>
             <div class="jive-contentBox">
+                <p><fmt:message key="push.server.settings.ios.description" /></p>
+                <br />
                 <table cellspacing="0" border="0">
                     <tbody>
                         <tr>
-                            <td>
-                                <label for="bundleId"><fmt:message key="pushserver.settings.ios.bundleid" /></label>
+                            <td style="vertical-align:top">
+                                <label for="bundleId"><fmt:message key="push.server.settings.ios.bundleId" /></label>
                             </td>
                             <td>
                                 <input type="text" name="bundleId" id="bundleId" size="80" value='${admin:getProperty("pushserver.apple.apns.bundleId", "")}' />
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <label for="key"><fmt:message key="pushserver.settings.ios.key" /></label>
-                            </td>
-                            <td>
-                                <input type="text" name="key" id="key" size="80" value='${admin:getProperty("pushserver.apple.apns.key", "")}' />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="teamId"><fmt:message key="pushserver.settings.ios.teamid" /></label>
+                            <td style="vertical-align:top">
+                                <label for="teamId"><fmt:message key="push.server.settings.ios.teamId" /></label>
                             </td>
                             <td>
                                 <input type="text" name="teamId" id="teamId" size="80" value='${admin:getProperty("pushserver.apple.apns.teamId", "")}' />
                             </td>
                         </tr>
+                        <tr>
+                            <td style="vertical-align:top">
+                                <label for="keyId"><fmt:message key="push.server.settings.ios.apns.keyId" /></label>
+                            </td>
+                            <td>
+                                <input type="text" name="keyId" id="keyId" size="80" value='${admin:getProperty("pushserver.apple.apns.key", "")}' />
+                            </td>
+                        </tr>
+                        <tr>
+                        <td style="vertical-align:top">
+                            <label for="encryptionKeyContent"><fmt:message key="push.server.settings.ios.apns.encryptionKey" /></label>
+                        </td>
+                        <td>
+                            <textarea name="encryptionKeyContent" id="encryptionKeyContent" cols="70" rows="10"></textarea>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
             <button type="submit" name="iosUpdate">
-                <fmt:message key="pushserver.settings.save" />
+                <fmt:message key="push.server.settings.save" />
             </button>
         </form>
         <br />
@@ -141,81 +125,38 @@
         <form action="pushserver-settings.jsp" method="post">
             <input type="hidden" name="csrf" value="${csrf}" />
             <div class="jive-contentBoxHeader">
-                <fmt:message key="pushserver.settings.android" />
+                <fmt:message key="push.server.settings.android" />
             </div>
             <div class="jive-contentBox">
+                <p><fmt:message key="push.server.settings.android.description" /></p>
+                <br />
                 <table cellspacing="0" border="0">
                     <tbody>
-                        <tr>
-                            <td>
-                                <label for="projectId"><fmt:message key="pushserver.settings.android.projectid" /></label>
-                            </td>
-                            <td>
-                                <input type="text" name="projectId" id="projectId" size="80" value='${admin:getProperty("pushserver.google.fcm.projectId", "")}' />
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style="vertical-align:top">
+                            <label for="projectId"><fmt:message key="push.server.settings.android.projectId" /></label>
+                        </td>
+                        <td>
+                            <input type="text" name="projectId" id="projectId" size="80" value='${admin:getProperty("pushserver.google.fcm.projectId", "")}' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align:top">
+                            <label for="serviceAccountKeyContent"><fmt:message key="push.server.settings.android.serviceAccountKey" /></label>
+                        </td>
+                        <td>
+                            <textarea name="serviceAccountKeyContent" id="serviceAccountKeyContent" cols="70" rows="10"></textarea>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
             <button type="submit" name="androidUpdate">
-                <fmt:message key="pushserver.settings.save" />
+                <fmt:message key="push.server.settings.save" />
             </button>
         </form>
         <br />
         <br />
 
-        <form action="pushserver-settings.jsp" method="post">
-            <input type="hidden" name="csrf" value="${csrf}" />
-            <div class="jive-contentBoxHeader">
-                <fmt:message key="pushserver.settings.ios.file" />
-            </div>
-            <div class="jive-contentBox">
-                <table cellspacing="0" border="0">
-                    <tbody>
-                        <tr>
-                            <td>
-                                <label for="apns"><fmt:message key="pushserver.settings.path"/>: <text readonly size="80">${apnscredentialpath}</text></label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <textarea name="apns" id="apns" cols="70" rows="10"></textarea>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <button type="submit" name="iosCredentialUpdate">
-                <fmt:message key="pushserver.settings.save" />
-            </button>
-        </form>
-        <br />
-        <br />
-
-        <form action="pushserver-settings.jsp" method="post">
-            <input type="hidden" name="csrf" value="${csrf}" />
-            <div class="jive-contentBoxHeader">
-                <fmt:message key="pushserver.settings.android.file" />
-            </div>
-            <div class="jive-contentBox">
-                <table cellspacing="0" border="0">
-                    <tbody>
-                        <tr>
-                            <td>
-                                <label for="fcm"><fmt:message key="pushserver.settings.path" />: <text readonly size="80">${fcmcredentialpath}</text></label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <textarea name="fcm" id="fcm" cols="70" rows="10"></textarea>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <button type="submit" name="androidCredentialUpdate">
-                <fmt:message key="pushserver.settings.save" />
-            </button>
-        </form>
     </body>
 </html>

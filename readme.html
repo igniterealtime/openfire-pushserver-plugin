@@ -84,19 +84,21 @@
 
 <dl>
     <dt><b>iOS</b></dt>
-    <dd><b>* Apns Bundle Id</b> (To learn more about App IDs, see <a href="https://help.apple.com/developer-account/#/dev1b35d6f83">Register an App ID</a>)</dd>
-    <dd><b>* Apns Key</b> (For more information, see <a href="https://help.apple.com/developer-account/#/dev646934554">Get a key identifier</a>)</dd>
-    <dd><b>* Apns Team Id</b> (For more information, see <a href="https://help.apple.com/developer-account/#/dev55c3c710c">Locate your Team ID</a>)</dd>
-    <dd><b>* APNS PKCS8 File Content</b> (The device token from your app, as a hexadecimal-encoded ASCII string. To learn more about device tokens, see <a href="https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns">Registering Your App with APNs</a>)</dd>
+    <dd>Push Server Plugin uses token-based authentication to communicate with Apple Push Notification service. (For more information, see <a href="https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_token-based_connection_to_apns">Establishing a Token-Based Connection to APNs</a>)</dd>
+    <dd><b>* Bundle Id</b> (<a href="https://developer.apple.com/documentation/appstoreconnectapi/bundle_ids">Bundle IDs</a>)</dd>
+    <dd><b>* Team Id</b> (<a href="https://help.apple.com/developer-account/#/dev55c3c710c">Locate your Team ID</a>)</dd>
+    <dd><b>* Key Id</b>
+    <dd><b>* Encryption Key</b>
     <dt><b>Android</b></dt>
+    <dd>Push Server Plugin uses <i>Firebase Cloud Messaging</i> to send push notifications to Android clients. In order to activate sending push notifications to Android clients, you should create a Firebase project and add Firebase to your Android application. (For more information, see <a href="https://firebase.google.com/docs/android/setup?authuser=0&hl=en">Add Firebase to your Android project</a>)</dd>
     <dd><b>* FCM Project Id</b></dd>
-    <dd><b>* FCM Credential File Content</b> (Service Account Json File Content)</dd>
+    <dd><b>* Google Cloud Service Account Key</b> (Service Account Key Json File)</dd>
 </dl>
 
 <dl>
-    <dt>Both of these can be found in your Firebase console, under Project Settings:</dt>
-    <dd>* The ID is found in the "General" tab</dd>
-    <dd>* The Service Account JSON file can be downloaded from the <i>Service Account</i> tab.</dd>
+    <dt>Both of these can be found in your Firebase console, under <i>Project Settings</i>:</dt>
+    <dd>* The ID is found in the <i>General</i> tab</dd>
+    <dd>* The Service Account JSON file can be created and downloaded from the <i>Service Account</i> tab. (or <a href="https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=en#creating">Create service account key using Google Console</a>)</dd>
 </dl>
 
 <h2>Client Configuration</h2>
