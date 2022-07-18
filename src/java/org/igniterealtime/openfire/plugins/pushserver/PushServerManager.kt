@@ -12,72 +12,108 @@ object PushServerManager {
 
     private val logger = LoggerFactory.getLogger(PushServerManager::class.java)
 
-    enum class Message(val isSuccess: Boolean, val key: String, val value: String) {
-        ApnsBundleIdMissing(false, "ios.apns.bundle-id.missing", "pushserver.settings.apns.bundle_id.missing.error")
-        , ApnsBundleIdInvalid(false, "ios.apns.bundle-id.invalid", "pushserver.settings.apns.bundle_id.invalid.error")
-        , ApnsBundleIdSaved( true, "ios.apns.bundle-id.saved", "pushserver.settings.apns.bundle_id.saved_successfully")
-        , ApnsKeyMissing( false, "ios.apns.key.missing", "pushserver.settings.apns.key.missing.error")
-        , ApnsKeyInvalid( false, "ios.apns.key.invalid", "pushserver.settings.apns.key.invalid.error")
-        , ApnsKeySaved( true, "ios.apns.key.saved", "pushserver.settings.apns.key.saved_successfully")
-        , ApnsTeamIdMissing( false, "ios.apns.team-id.missing", "pushserver.settings.apns.team_id.missing.error")
-        , ApnsTeamIdInvalid( false, "ios.apns.team-id.invalid", "pushserver.settings.apns.team_id.invalid.error")
-        , ApnsTeamIdSaved( true, "ios.apns.team-id.saved", "pushserver.settings.apns.team_id.saved_successfully")
-        , FcmProjectIdMissing( false, "android.fcm.project-id.missing", "pushserver.settings.fcm.project_id.missing.error")
-        , FcmProjectIdInvalid( false, "android.fcm.project-id.invalid", "pushserver.settings.fcm.project_id.invalid.error")
-        , FcmProjectIdSaved( true, "android.fcm.project-id.saved", "pushserver.settings.fcm.project_id.saved_successfully")
-        , IosCredentialMissing( false, "credential.ios.missing", "pushserver.settings.apns.credential.missing.error")
-        , IosCredentialSaved( true, "credential.ios.saved", "pushserver.settings.apns.credential.saved_successfully")
-        , AndroidCredentialMissing( false, "credential.android.missing", "pushserver.settings.fcm.credential.missing.error")
-        , AndroidCredentialSaved( true, "credential.android.saved", "pushserver.settings.fcm.credential.saved_successfully")
+    enum class Message(val isSuccess: Boolean, val value: String) {
+        CSRFError(false, "push.server.settings.csrf.error")
+        , IOSBundleIdMissing(false, "push.server.settings.ios.bundleId.missing.error")
+        , IOSBundleIdInvalid(false, "push.server.settings.ios.bundleId.invalid.error")
+        , IOSBundleIdSaved( true, "push.server.settings.ios.bundleId.save.success")
+        , IOSTeamIdMissing( false, "push.server.settings.ios.teamId.missing.error")
+        , IOSTeamIdInvalid( false, "push.server.settings.ios.teamId.invalid.error")
+        , IOSTeamIdSaved( true, "push.server.settings.ios.teamId.save.success")
+        , IOSApnsKeyIdMissing( false,  "push.server.settings.ios.apns.keyId.missing.error")
+        , IOSApnsKeyIdInvalid( false, "push.server.settings.ios.apns.keyId.invalid.error")
+        , IOSApnsKeyIdSaved( true, "push.server.settings.ios.apns.keyId.save.success")
+        , IOSEncryptionKeyMissing( false,  "push.server.settings.ios.apns.encryptionKey.missing.error")
+        , IOSEncryptionKeySaveError( false, "push.server.settings.ios.apns.encryptionKey.save.error")
+        , IOSEncryptionKeySaved( true, "push.server.settings.ios.apns.encryptionKey.save.success")
+        , AndroidProjectIdMissing( false, "push.server.settings.android.projectId.missing.error")
+        , AndroidProjectIdInvalid( false, "push.server.settings.android.projectId.invalid.error")
+        , AndroidProjectIdSaved( true, "push.server.settings.android.projectId.save.success")
+        , AndroidServiceAccountKeyMissing( false, "push.server.settings.android.serviceAccountKey.missing.error")
+        , AndroidServiceAccountKeySaveError( false, "push.server.settings.android.serviceAccountKey.save.error")
+        , AndroidServiceAccountKeySaved( true, "push.server.settings.android.serviceAccountKey.save.success")
     }
-
-    @JvmStatic fun getFilePath(type: PushRecord.Type) =
-        when(type) {
-            PushRecord.Type.ios -> PushServerProperty.APNS_PKCS8_FILE_PATH
-            PushRecord.Type.android -> PushServerProperty.FCM_CREDENTIAL_FILE_PATH
-            PushRecord.Type.none -> null
-        }
 
     @JvmStatic var FCM_CREDENTIAL_FILE_PATH = PushServerProperty.FCM_CREDENTIAL_FILE_PATH
 
-    @JvmStatic fun setAndroidSettings(projectId: String?): Message {
-        projectId ?: return Message.FcmProjectIdMissing
-
-        if (!isValidFcmProjectId(projectId)) {
-            return Message.FcmProjectIdInvalid
-        }
-
-        JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_FCM_PROJECT_ID.key, projectId)
-        return Message.FcmProjectIdSaved
-    }
-
-    @JvmStatic fun setIosSettings(bundleId: String?, key: String?, teamId: String?): List<Message> {
+    @JvmStatic fun setIosSettings(bundleId: String?, teamId: String?, keyId: String?, encryptionKeyContent: String?): List<Message> {
         val messageList = mutableListOf<Message>()
 
         when {
-            bundleId == null -> messageList.add(Message.ApnsBundleIdMissing)
-            !isValidApnsBundleId(bundleId) -> messageList.add(Message.ApnsBundleIdInvalid)
+            bundleId == null -> messageList.add(Message.IOSBundleIdMissing)
+            !isValidApnsBundleId(bundleId) -> messageList.add(Message.IOSBundleIdInvalid)
             else -> {
-                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_APNS_BUNDLE_ID.key, bundleId)
-                messageList.add(Message.ApnsBundleIdSaved)
+                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_IOS_BUNDLE_ID.key, bundleId)
+                messageList.add(Message.IOSBundleIdSaved)
             }
         }
 
         when {
-            key == null -> messageList.add(Message.ApnsKeyMissing)
-            !isValidApnsKey(key) -> messageList.add(Message.ApnsKeyInvalid)
+            teamId == null -> messageList.add(Message.IOSTeamIdMissing)
+            !isValidApnsTeamId(teamId) -> messageList.add(Message.IOSTeamIdInvalid)
             else -> {
-                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_APNS_KEY.key, key)
-                messageList.add(Message.ApnsKeySaved)
+                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_IOS_TEAM_ID.key, teamId)
+                messageList.add(Message.IOSTeamIdSaved)
             }
         }
 
         when {
-            teamId == null -> messageList.add(Message.ApnsTeamIdMissing)
-            !isValidApnsTeamId(teamId) -> messageList.add(Message.ApnsTeamIdInvalid)
+            keyId == null -> messageList.add(Message.IOSApnsKeyIdMissing)
+            !isValidApnsKey(keyId) -> messageList.add(Message.IOSApnsKeyIdInvalid)
             else -> {
-                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_APNS_TEAM_ID.key, teamId)
-                messageList.add(Message.ApnsTeamIdSaved)
+                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_IOS_APNS_KEY_ID.key, keyId)
+                messageList.add(Message.IOSApnsKeyIdSaved)
+            }
+        }
+
+        when (encryptionKeyContent) {
+            null -> {
+                messageList.add(Message.IOSEncryptionKeyMissing)
+            }
+            else -> {
+                runCatching {
+                    writeCredentialFileContent(
+                        path = PushServerProperty.APNS_PKCS8_FILE_PATH
+                        , content = encryptionKeyContent
+                    )
+                }.onSuccess {
+                    messageList.add(Message.IOSEncryptionKeySaved)
+                }.onFailure {
+                    messageList.add(Message.IOSEncryptionKeySaveError)
+                }
+            }
+        }
+
+        return messageList
+    }
+
+    @JvmStatic fun setAndroidSettings(projectId: String?, serviceAccountKeyContent: String?): List<Message> {
+        val messageList = mutableListOf<Message>()
+
+        when {
+            projectId == null -> messageList.add(Message.AndroidProjectIdMissing)
+            !isValidFcmProjectId(projectId) -> messageList.add(Message.AndroidProjectIdInvalid)
+            else -> {
+                JiveGlobals.setProperty(PushServerProperty.Property.PROPERTY_NAME_ANDROID_PROJECT_ID.key, projectId)
+                messageList.add(Message.AndroidProjectIdSaved)
+            }
+        }
+
+        when (serviceAccountKeyContent) {
+            null -> {
+                messageList.add(Message.AndroidServiceAccountKeyMissing)
+            }
+            else -> {
+                runCatching {
+                    writeCredentialFileContent(
+                        path = PushServerProperty.FCM_CREDENTIAL_FILE_PATH
+                        , content = serviceAccountKeyContent
+                    )
+                }.onSuccess {
+                    messageList.add(Message.AndroidServiceAccountKeySaved)
+                }.onFailure {
+                    messageList.add(Message.AndroidServiceAccountKeySaveError)
+                }
             }
         }
 
@@ -100,17 +136,10 @@ object PushServerManager {
         return id.all { it.isLetterOrDigit() } && id.length == 10
     }
 
-    @JvmStatic fun writeCredentialFileContent(content: String, type: PushRecord.Type) {
-        val file = when(type) {
-            PushRecord.Type.ios -> File(PushServerProperty.APNS_PKCS8_FILE_PATH)
-            PushRecord.Type.android -> File(PushServerProperty.FCM_CREDENTIAL_FILE_PATH)
-            PushRecord.Type.none -> {
-                throw Exception("Unexpected content type while writing file")
-            }
-        }
-
+    @JvmStatic private fun writeCredentialFileContent(path: String, content: String) {
+        val file = File(path)
         var writer: Writer? = null
-        try {
+        runCatching {
             Files.createDirectories(Paths.get(file.parent))
 
             if (file.exists()) {
@@ -118,16 +147,10 @@ object PushServerManager {
             }
 
             writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8))
-            writer.write(content)
-        } catch (e: Exception) {
-            logger.error("Credential file content couldn't be written. ($type)", e)
-        } finally {
-            try {
-                writer?.close()
-            } catch (e: Exception) {
-                logger.error("Writer couldn't be closed.", e)
-            }
+            writer?.write(content)
         }
+
+        writer?.close()
     }
 
 }

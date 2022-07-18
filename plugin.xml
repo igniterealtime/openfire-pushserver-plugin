@@ -19,7 +19,7 @@
     <adminconsole>
         <tab id="tab-server">
             <sidebar id="sidebar-server-settings">
-                <item id="pushserver-settings" name="${pushserver.settings.title}" url="pushserver-settings.jsp" description="${pushserver.settings.description}" />
+                <item id="pushserver-settings" name="${push.server.settings.title}" url="pushserver-settings.jsp" description="${push.server.settings.description}" />
             </sidebar>
         </tab>
     </adminconsole>

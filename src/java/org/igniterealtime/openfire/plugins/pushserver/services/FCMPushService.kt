@@ -18,11 +18,11 @@ class FCMPushService private constructor(): PushService {
                 val fcmCredentialFile = File(PushServerProperty.FCM_CREDENTIAL_FILE_PATH)
                 Pushraven.setCredential(fcmCredentialFile)
 
-                PushServerProperty.Property.PROPERTY_NAME_FCM_PROJECT_ID.value?.let { id ->
+                PushServerProperty.Property.PROPERTY_NAME_ANDROID_PROJECT_ID.value?.let { id ->
                     Pushraven.setProjectId(id)
                     FCMPushService()
                 } ?: kotlin.run {
-                    logger.error("${PushServerProperty.Property.PROPERTY_NAME_FCM_PROJECT_ID.key} should be set.")
+                    logger.error("${PushServerProperty.Property.PROPERTY_NAME_ANDROID_PROJECT_ID.key} should be set.")
                     null
                 }
             } catch (e: IOException) {

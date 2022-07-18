@@ -23,18 +23,18 @@ class APNSPushService private constructor(
         operator fun invoke(): APNSPushService? {
             val apnsCredentialFile = File(PushServerProperty.APNS_PKCS8_FILE_PATH)
 
-            val teamId = PushServerProperty.Property.PROPERTY_NAME_APNS_TEAM_ID.value ?: kotlin.run {
-                logger.error("${PushServerProperty.Property.PROPERTY_NAME_APNS_TEAM_ID.key} should be set.")
+            val teamId = PushServerProperty.Property.PROPERTY_NAME_IOS_TEAM_ID.value ?: kotlin.run {
+                logger.error("${PushServerProperty.Property.PROPERTY_NAME_IOS_TEAM_ID.key} should be set.")
                 return null
             }
 
-            val key = PushServerProperty.Property.PROPERTY_NAME_APNS_KEY.value ?: kotlin.run {
-                logger.error("${PushServerProperty.Property.PROPERTY_NAME_APNS_KEY.key} should be set.")
+            val key = PushServerProperty.Property.PROPERTY_NAME_IOS_APNS_KEY_ID.value ?: kotlin.run {
+                logger.error("${PushServerProperty.Property.PROPERTY_NAME_IOS_APNS_KEY_ID.key} should be set.")
                 return null
             }
 
-            val bundleId = PushServerProperty.Property.PROPERTY_NAME_APNS_BUNDLE_ID.value ?: kotlin.run {
-                logger.error("${PushServerProperty.Property.PROPERTY_NAME_APNS_BUNDLE_ID.key} should be set.")
+            val bundleId = PushServerProperty.Property.PROPERTY_NAME_IOS_BUNDLE_ID.value ?: kotlin.run {
+                logger.error("${PushServerProperty.Property.PROPERTY_NAME_IOS_BUNDLE_ID.key} should be set.")
                 return null
             }
 
