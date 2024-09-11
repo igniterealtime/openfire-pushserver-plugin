@@ -7,11 +7,9 @@
     <version>${project.version}</version>
 
     <author>Busoft Teknoloji A.Ş.</author>
-    <date>09/02/2021</date>
+    <date>2024-09-11</date>
 
-    <minJavaVersion>1.8</minJavaVersion>
-
-    <minServerVersion>4.3.0</minServerVersion>
+    <minServerVersion>4.8.0</minServerVersion>
 
     <databaseKey>pushserver</databaseKey>
     <databaseVersion>1</databaseVersion>

@@ -22,8 +22,8 @@ class PushServerProperty: PropertyEventListener {
     companion object {
         val serviceName = JiveGlobals.getProperty("pushserver.name", "push")
 
-        val FCM_CREDENTIAL_FILE_PATH = "${JiveGlobals.getHomeDirectory()}${File.separator}conf${File.separator}pushserver-fcm.json"
-        val APNS_PKCS8_FILE_PATH = "${JiveGlobals.getHomeDirectory()}${File.separator}conf${File.separator}pushserver-apns.p8"
+        val FCM_CREDENTIAL_FILE_PATH = "${JiveGlobals.getHomePath().resolve("conf").resolve("pushserver-fcm.json")}"
+        val APNS_PKCS8_FILE_PATH = "${JiveGlobals.getHomePath().resolve("conf").resolve("pushserver-apns.p8")}"
 
         private val properties = Property.values().associateBy({it}) { JiveGlobals.getProperty(it.key, null) }.toMutableMap()
     }
