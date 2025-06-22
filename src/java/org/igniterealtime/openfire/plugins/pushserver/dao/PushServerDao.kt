@@ -10,10 +10,16 @@ object PushServerDao {
 
     private const val TABLE_NAME = "ofPushServer"
 
+//    private const val ADD_PUSH_RECORD = """
+//        INSERT INTO $TABLE_NAME (domain, deviceId, token, node, secret, type) 
+//            VALUES (?, ?, ?, ?, ?, ?) 
+//            ON DUPLICATE KEY UPDATE token = VALUES(token)
+//   """
+
     private const val ADD_PUSH_RECORD = """
         INSERT INTO $TABLE_NAME (domain, deviceId, token, node, secret, type) 
             VALUES (?, ?, ?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE token = VALUES(token)
+            ON CONFLICT (domain, deviceId) DO UPDATE SET token=?;
     """
     private const val DELETE_PUSH_RECORD = """
         DELETE FROM $TABLE_NAME 
@@ -33,7 +39,7 @@ object PushServerDao {
     fun addPushRecord(pushRecord: PushRecord): PushRecord? {
         return DbUtils.doWithConnection(
             ADD_PUSH_RECORD
-            , listOf(pushRecord.domain, pushRecord.deviceId, pushRecord.token, pushRecord.node, pushRecord.secret, pushRecord.type.name)
+            , listOf(pushRecord.domain, pushRecord.deviceId, pushRecord.token, pushRecord.node, pushRecord.secret, pushRecord.type.name, pushRecord.token)
             , { conn, statement ->
                 statement.executeUpdate()
 
