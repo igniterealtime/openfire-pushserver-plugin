@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.eatthepath</groupId>
             <artifactId>pushy</artifactId>
-            <version>0.15.0</version>
+            <version>0.15.4</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
